@@ -69,11 +69,12 @@ export async function listMaterialsForStudent(studentId: string, query: Material
     if (query.sessionId) {
       conditions.push(eq(materials.sessionId, query.sessionId))
     }
-    if (query.search) {
+    const searchTerm = (query.q || query.search || '').trim()
+    if (searchTerm) {
       conditions.push(
         or(
-          ilike(materials.title, `%${query.search}%`),
-          ilike(materials.description, `%${query.search}%`),
+          ilike(materials.title, `%${searchTerm}%`),
+          ilike(materials.description, `%${searchTerm}%`),
         )!,
       )
     }
@@ -135,6 +136,16 @@ export async function searchMaterialsForStudent(
     const db = getDb()
     const searchTerm = query.q.trim()
     const conditions = [inArray(materials.subjectId, allowed)]
+
+    if (query.subjectId) {
+      conditions.push(eq(materials.subjectId, query.subjectId))
+    }
+    if (query.type) {
+      conditions.push(eq(materials.type, query.type))
+    }
+    if (query.sessionId) {
+      conditions.push(eq(materials.sessionId, query.sessionId))
+    }
 
     if (searchTerm) {
       conditions.push(

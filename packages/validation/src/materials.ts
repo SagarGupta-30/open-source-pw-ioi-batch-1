@@ -8,12 +8,16 @@ export const materialListQuerySchema = paginationQuerySchema.extend({
   type: materialTypeSchema.optional(),
   sessionId: uuidSchema.optional(),
   search: z.string().optional(),
+  q: z.string().optional(),
 })
 export type MaterialListQuery = z.infer<typeof materialListQuerySchema>
 
 /** Query params for GET /api/materials/search */
 export const materialSearchQuerySchema = paginationQuerySchema.extend({
   q: z.string().default(''),
+  subjectId: uuidSchema.optional(),
+  type: materialTypeSchema.optional(),
+  sessionId: uuidSchema.optional(),
 })
 export type MaterialSearchQuery = z.infer<typeof materialSearchQuerySchema>
 

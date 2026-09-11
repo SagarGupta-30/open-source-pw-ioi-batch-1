@@ -16,8 +16,11 @@ import {
   requestUploadTicket,
 } from '../api'
 
+const MATERIAL_TYPES = ['ALL', 'PDF', 'PPT', 'DOC', 'VIDEO', 'LINK', 'OTHER'] as const
+
 export function MaterialAdminView() {
   const [searchQuery, setSearchQuery] = useState('')
+  const [selectedType, setSelectedType] = useState<string>('ALL')
   const [showAddModal, setShowAddModal] = useState(false)
   const [materials, setMaterials] = useState<Material[]>([])
   const [loading, setLoading] = useState(true)
@@ -34,7 +37,8 @@ export function MaterialAdminView() {
 
   const loadMaterials = () => {
     setLoading(true)
-    fetchAdminMaterials({ search: searchQuery.trim() || undefined })
+    const typeFilter = selectedType === 'ALL' ? undefined : selectedType
+    fetchAdminMaterials({ search: searchQuery.trim() || undefined, type: typeFilter })
       .then((res) => setMaterials(res.items))
       .catch((err) => setErrorMessage(err.message))
       .finally(() => setLoading(false))
@@ -42,7 +46,7 @@ export function MaterialAdminView() {
 
   useEffect(() => {
     loadMaterials()
-  }, [searchQuery])
+  }, [searchQuery, selectedType])
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -122,14 +126,35 @@ export function MaterialAdminView() {
     <div className="space-y-6">
       {/* Header controls */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="w-full sm:w-80">
-          <Input
-            label="Search"
-            type="search"
-            placeholder="Search class materials..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="w-full sm:w-72">
+            <Input
+              label="Search"
+              type="search"
+              placeholder="Search class materials..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-wrap gap-1.5 pt-6 sm:pt-0">
+            {MATERIAL_TYPES.map((t) => {
+              const isSelected = selectedType === t
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setSelectedType(t)}
+                  className={`rounded-lg px-3 py-1 text-xs font-medium transition-all ${
+                    isSelected
+                      ? 'bg-brand text-white shadow-sm'
+                      : 'bg-surface-2 text-fg-muted hover:bg-surface-3'
+                  }`}
+                >
+                  {t}
+                </button>
+              )
+            })}
+          </div>
         </div>
         <Button onClick={() => setShowAddModal(true)}>+ Upload Material</Button>
       </div>

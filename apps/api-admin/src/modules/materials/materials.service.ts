@@ -142,11 +142,12 @@ export async function listMaterials(query: MaterialListQuery) {
     if (query.sessionId) {
       conditions.push(eq(materials.sessionId, query.sessionId))
     }
-    if (query.search) {
+    const searchTerm = (query.q || query.search || '').trim()
+    if (searchTerm) {
       conditions.push(
         or(
-          ilike(materials.title, `%${query.search}%`),
-          ilike(materials.description, `%${query.search}%`),
+          ilike(materials.title, `%${searchTerm}%`),
+          ilike(materials.description, `%${searchTerm}%`),
         )!,
       )
     }

@@ -6,9 +6,10 @@ import type {
   UpdateMaterialInput,
 } from '@repo/validation/materials'
 
-export function fetchAdminMaterials(params?: { subjectId?: string; search?: string }) {
+export function fetchAdminMaterials(params?: { subjectId?: string; type?: string; search?: string }) {
   const query = new URLSearchParams()
   if (params?.subjectId) query.set('subjectId', params.subjectId)
+  if (params?.type) query.set('type', params.type)
   if (params?.search) query.set('search', params.search)
   const qs = query.toString() ? `?${query.toString()}` : ''
   return api.get<MaterialListResponse>(`/api/materials${qs}`)

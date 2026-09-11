@@ -69,7 +69,7 @@ describe('GET /api/materials/search', () => {
     await request(app).get('/api/materials/search?q=math').expect(401)
   })
 
-  it('returns search results for authenticated student', async () => {
+  it('returns search results with combined type filter for authenticated student', async () => {
     const studentToken = signTestToken({
       sub: randomUUID(),
       role: 'STUDENT',
@@ -77,10 +77,11 @@ describe('GET /api/materials/search', () => {
     })
 
     const res = await request(app)
-      .get('/api/materials/search?q=test')
+      .get('/api/materials/search?q=test&type=PDF')
       .set('Authorization', `Bearer ${studentToken}`)
       .expect(200)
 
     expect(res.body).toHaveProperty('items')
+    expect(Array.isArray(res.body.items)).toBe(true)
   })
 })
